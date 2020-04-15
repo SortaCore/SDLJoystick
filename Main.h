@@ -32,8 +32,8 @@
 #define	EXP_NUMBUTTONS              7
 #define	EXP_NUMHATS                 8
 #define	EXP_NUMBALLS                9
-#define EXP_DEVICEGUID 				10
-#define EXP_DEVICENAME 				11
+#define EXP_DEVICENAME 				10
+#define EXP_DEVICEGUID 				11
 #define	EXP_LAST                    12
 
 // --------------------------------

@@ -252,8 +252,8 @@ BEGIN
     M_NUMBUTTONS            "NumButtons("
     M_NUMHATS               "NumHats("
     M_NUMBALLS              "NumBalls("
-    M_DEVICEGUID            "DeviceGUID$("
     M_DEVICENAME            "DeviceName$("
+    M_DEVICEGUID            "DeviceGUID$("
 END
 
 STRINGTABLE DISCARDABLE 

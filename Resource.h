@@ -46,8 +46,8 @@
 #define M_NUMBUTTONS                    7030
 #define M_NUMHATS                       7035
 #define M_NUMBALLS                      7040
-#define M_DEVICEGUID                    7045
-#define M_DEVICENAME            		7050
+#define M_DEVICENAME            		7045
+#define M_DEVICEGUID                    7050
 
 #define M_CND_JOY						7155
 #define M_CND_BUTTON					7160
