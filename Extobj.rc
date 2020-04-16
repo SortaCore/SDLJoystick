@@ -122,6 +122,7 @@ BEGIN
         MENUITEM "Any button is pressed",    IDMN_ANYBUTTONPRESSED
         MENUITEM "Any button is held down",  IDMN_ANYBUTTONHELDDOWN
         MENUITEM "Any button is released",   IDMN_ANYBUTTONRELEASED
+        MENUITEM SEPARATOR
     END
 END
 #endif
