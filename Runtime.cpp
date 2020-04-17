@@ -111,17 +111,17 @@ void CloseJoystick(LPRDATA rdPtr, int joy)
 	rdPtr->SDL_Data[joy].connected = false;
 }
 
-void OpenJoystick(LPRDATA rdPtr, int joy)
+void OpenJoystick(LPRDATA rdPtr, int joy, int which)
 {
 	if (rdPtr->SDL_Data[joy].connected) CloseJoystick(rdPtr, joy);
-	rdPtr->SDL_Data[joy].joystick = SDL_JoystickOpen(joy);
+	rdPtr->SDL_Data[joy].joystick = SDL_JoystickOpen(which);
 	if (rdPtr->SDL_Data[joy].joystick == nullptr)
 	{
 		rdPtr->SDL_Data[joy].connected = false;
 		rdPtr->SDL_Data[joy].joy_id = -1;
 		return;
 	}
-	rdPtr->SDL_Data[joy].joy_id = joy;
+	rdPtr->SDL_Data[joy].joy_id = SDL_JoystickInstanceID(rdPtr->SDL_Data[joy].joystick);
 	rdPtr->SDL_Data[joy].num_axes = SDL_JoystickNumAxes(rdPtr->SDL_Data[joy].joystick);
 	rdPtr->SDL_Data[joy].num_buttons = SDL_JoystickNumButtons(rdPtr->SDL_Data[joy].joystick);
 	rdPtr->SDL_Data[joy].num_hats = SDL_JoystickNumHats(rdPtr->SDL_Data[joy].joystick);
@@ -147,24 +147,25 @@ void OpenJoystick(LPRDATA rdPtr, int joy)
 // 
 short WINAPI DLLExport HandleRunObject(LPRDATA rdPtr)
 {
+	//TCHAR ErrorMessage[400];
 	if (rdPtr->SDL == nullptr) return REFLAG_DISPLAY;
-	SDL_JoystickUpdate();
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{
-		switch (event.type)
+		switch (event.jdevice.type)
 		{
 		default:
 			break;
 		case SDL_JOYDEVICEADDED:
 		{
-			const int which = event.cdevice.which;
+			const int which = event.jdevice.which;
+			//sprintf(ErrorMessage, "Device added; which: %d", which);
+			//MessageBoxA(nullptr, ErrorMessage, "SDL message", MB_OK | MB_ICONINFORMATION);
 			for (int joy = 0; joy < 16; joy++)
 			{
-				if (!rdPtr->SDL_Data[joy].connected || rdPtr->SDL_Data[joy].joy_id == which)
+				if (!rdPtr->SDL_Data[joy].connected)
 				{
-					//MessageBoxA(nullptr, "Device added.", "SDL message", MB_OK | MB_ICONINFORMATION);
-					OpenJoystick(rdPtr, joy);
+					OpenJoystick(rdPtr, joy, which);
 					break;
 				}
 			}
@@ -172,7 +173,9 @@ short WINAPI DLLExport HandleRunObject(LPRDATA rdPtr)
 		}
 		case SDL_JOYDEVICEREMOVED:
 		{
-			const int which = event.cdevice.which;
+			const int which = event.jdevice.which;
+			//sprintf(ErrorMessage, "Device removed; which: %d", which);
+			//MessageBoxA(nullptr, ErrorMessage, "SDL message", MB_OK | MB_ICONINFORMATION);
 			for (int joy = 0; joy < 16; joy++)
 			{
 				if (SDL_JoystickInstanceID(rdPtr->SDL_Data[joy].joystick) == which)
