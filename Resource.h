@@ -48,6 +48,10 @@
 #define M_NUMBALLS                      7040
 #define M_DEVICENAME            		7045
 #define M_DEVICEGUID                    7050
+#define M_GETBUTTONSHELD                7055
+#define M_HELDBUTTON		            7060
+#define M_LASTPRESSED		            7065
+#define M_LASTRELEASED	                7070
 
 #define M_CND_JOY						7155
 #define M_CND_BUTTON					7160
@@ -80,6 +84,10 @@
 #define IDMN_NUMBUTTONS					27045
 #define IDMN_NUMHATS					27050
 #define IDMN_NUMBALLS					27055
+#define IDMN_GETBUTTONSHELD             27060
+#define IDMN_HELDBUTTON					27065
+#define IDMN_LASTPRESSED			    27070
+#define IDMN_LASTRELEASED	            27075
 
 #define IDC_STATIC						-1
 

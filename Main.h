@@ -34,7 +34,11 @@
 #define	EXP_NUMBALLS                9
 #define EXP_DEVICENAME 				10
 #define EXP_DEVICEGUID 				11
-#define	EXP_LAST                    12
+#define	EXP_GETBUTTONSHELD	        12
+#define	EXP_HELDBUTTON	            13
+#define	EXP_LASTPRESSED	            14
+#define	EXP_LASTRELEASED	        15
+#define	EXP_LAST                    16
 
 // --------------------------------
 // EDITION OF OBJECT DATA STRUCTURE
@@ -69,6 +73,9 @@ struct SDL_JoystickData
 	Uint8 hat[4];
 	int ball_x[4];
 	int ball_y[4];
+	Sint8 currentheld[32];
+	Sint8 lastpressed;
+	Sint8 lastreleased;
 	char num_buttons;
 	char num_axes;
 	char num_hats;

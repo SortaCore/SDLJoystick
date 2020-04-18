@@ -54,6 +54,10 @@ short expressionsInfos[]=
 		IDMN_NUMBALLS, M_NUMBALLS, EXP_NUMBALLS, 0, 1, EXPPARAM_LONG, 0,
 		IDMN_DEVICENAME, M_DEVICENAME, EXP_DEVICENAME, EXPFLAG_STRING, 1, EXPPARAM_LONG, 0,
 		IDMN_DEVICEGUID, M_DEVICEGUID, EXP_DEVICEGUID, EXPFLAG_STRING, 1, EXPPARAM_LONG, 0,
+		IDMN_GETBUTTONSHELD, M_GETBUTTONSHELD, EXP_GETBUTTONSHELD, EXPFLAG_STRING, 1, EXPPARAM_LONG, 0,
+		IDMN_HELDBUTTON, M_HELDBUTTON, EXP_HELDBUTTON, 0, 2, EXPPARAM_LONG, EXPPARAM_LONG, 0, 0,
+		IDMN_LASTPRESSED, M_LASTPRESSED, EXP_LASTPRESSED, 0, 1, EXPPARAM_LONG, 0,
+		IDMN_LASTRELEASED, M_LASTRELEASED, EXP_LASTRELEASED, 0, 1, EXPPARAM_LONG, 0,
 		};
 
 // ============================================================================
@@ -228,6 +232,43 @@ long WINAPI DLLExport GetDeviceName(LPRDATA rdPtr, long param1)
 	return (long)pszName;
 }
 
+long WINAPI DLLExport GetButtonsHeld(LPRDATA rdPtr, long param1)
+{
+	LPTSTR pszName = ("");
+	pszName = (LPTSTR)callRunTimeFunction(rdPtr, RFUNCTION_GETSTRINGSPACE_EX, 0, 16 * sizeof(TCHAR));
+	int buttons = 0;
+	long joy = CNC_GetFirstExpressionParameter(rdPtr, param1, TYPE_INT);
+	if (pszName != NULL)
+	{
+		for (int i = 0; i < 32; i++)
+		{
+			if (rdPtr->SDL_Data[joy].held_buttons[i]) buttons |= (1 << i);
+		}
+		sprintf(pszName, "%08X", buttons);
+	}
+	rdPtr->rHo.hoFlags |= HOF_STRING;
+	return (long)pszName;
+}
+
+long WINAPI DLLExport HeldButton(LPRDATA rdPtr, long param1)
+{
+	long joy = CNC_GetFirstExpressionParameter(rdPtr, param1, TYPE_INT);
+	long index = CNC_GetNextExpressionParameter(rdPtr, param1, TYPE_INT);
+	return rdPtr->SDL_Data[joy].currentheld[index];
+}
+
+long WINAPI DLLExport LastButtonPressed(LPRDATA rdPtr, long param1)
+{
+	long joy = CNC_GetFirstExpressionParameter(rdPtr, param1, TYPE_LONG);
+	return rdPtr->SDL_Data[joy].lastpressed;
+}
+
+long WINAPI DLLExport LastButtonReleased(LPRDATA rdPtr, long param1)
+{
+	long joy = CNC_GetFirstExpressionParameter(rdPtr, param1, TYPE_LONG);
+	return rdPtr->SDL_Data[joy].lastreleased;
+}
+
 // ----------------------------------------------------------
 // Condition / Action / Expression jump table
 // ----------------------------------------------------------
@@ -267,5 +308,9 @@ long (WINAPI * ExpressionJumps[])(LPRDATA rdPtr, long param) =
 			NumBalls,
 			GetDeviceName,
 			GetDeviceGUID,
+			GetButtonsHeld,
+			HeldButton,
+			LastButtonPressed,
+			LastButtonReleased,
 			0
 			};

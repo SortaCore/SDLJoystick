@@ -32,10 +32,16 @@ short WINAPI DLLExport CreateRunObject(LPRDATA rdPtr, LPEDATA edPtr, fpcob cobPt
 	TCHAR rootdir[MAX_PATH];
 	TCHAR ErrorMsg[400];
 	DWORD dwError = 0;
-	//Reset joystick IDs
+	//Reset joystick IDs and held buttons
 	for (int i = 0; i < 16; i++)
 	{
 		rdPtr->SDL_Data[i].joy_id = -1;
+		rdPtr->SDL_Data[i].lastpressed = -1;
+		rdPtr->SDL_Data[i].lastreleased = -1;
+		for (int h = 0; h < 32; h++)
+		{
+			rdPtr->SDL_Data[i].currentheld[h] = -1;
+		}
 	}
 	//Get path to DLL
 	GetCurrentDirectory(MAX_PATH - 1, rootdir);
@@ -127,6 +133,12 @@ void OpenJoystick(LPRDATA rdPtr, int joy, int which)
 	rdPtr->SDL_Data[joy].num_hats = SDL_JoystickNumHats(rdPtr->SDL_Data[joy].joystick);
 	rdPtr->SDL_Data[joy].num_balls = SDL_JoystickNumBalls(rdPtr->SDL_Data[joy].joystick);
 	rdPtr->SDL_Data[joy].haptic = SDL_HapticOpenFromJoystick(rdPtr->SDL_Data[joy].joystick);
+	rdPtr->SDL_Data[joy].lastpressed = -1;
+	rdPtr->SDL_Data[joy].lastreleased = -1;
+	for (int h = 0; h < 32; h++)
+	{
+		rdPtr->SDL_Data[joy].currentheld[h] = -1;
+	}
 	if (rdPtr->SDL_Data[joy].haptic == nullptr)
 	{
 		rdPtr->SDL_Data[joy].connected = true;
@@ -152,6 +164,50 @@ short WINAPI DLLExport HandleRunObject(LPRDATA rdPtr)
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{
+		//Check for button events
+		const int which = event.jbutton.which;
+		switch (event.jbutton.type)
+		{
+		default:
+			break;
+		case SDL_JOYBUTTONDOWN:
+			for (int i = 0; i < 16; i++)
+			{
+				if (rdPtr->SDL_Data[i].joy_id == which)
+				{
+					rdPtr->SDL_Data[i].lastpressed = event.jbutton.button;
+					for (int hh2 = 0; hh2 < 32; hh2++)
+					{
+						if (rdPtr->SDL_Data[i].currentheld[hh2] == -1)
+						{
+							rdPtr->SDL_Data[i].currentheld[hh2] = event.jbutton.button;
+							break;
+						}
+					}
+				}
+				break;
+			}
+			break;
+		case SDL_JOYBUTTONUP:
+			for (int i = 0; i < 16; i++)
+			{
+				if (rdPtr->SDL_Data[i].joy_id == which)
+				{
+					rdPtr->SDL_Data[i].lastreleased = event.jbutton.button;
+					for (int hh2 = 0; hh2 < 32; hh2++)
+					{
+						if (rdPtr->SDL_Data[i].currentheld[hh2] == event.jbutton.button)
+						{
+							rdPtr->SDL_Data[i].currentheld[hh2] = -1;
+							break;
+						}
+					}
+				}
+				break;
+			}
+			break;
+		}
+		//Check for device events
 		switch (event.jdevice.type)
 		{
 		default:
