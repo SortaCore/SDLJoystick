@@ -75,6 +75,11 @@ short WINAPI DLLExport CreateRunObject(LPRDATA rdPtr, LPEDATA edPtr, fpcob cobPt
 // 
 short WINAPI DLLExport DestroyRunObject(LPRDATA rdPtr, long fast)
 {
+	if (rdPtr->SDL != nullptr)
+	{
+		SDL_Quit();
+		FreeLibrary(rdPtr->SDL);
+	}
 	// No errors
 	return 0;
 }
