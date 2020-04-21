@@ -169,49 +169,6 @@ short WINAPI DLLExport HandleRunObject(LPRDATA rdPtr)
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{
-		//Check for button events
-		const int which = event.jbutton.which;
-		switch (event.jbutton.type)
-		{
-		default:
-			break;
-		case SDL_JOYBUTTONDOWN:
-			for (int i = 0; i < 16; i++)
-			{
-				if (rdPtr->SDL_Data[i].joy_id == which)
-				{
-					rdPtr->SDL_Data[i].lastpressed = event.jbutton.button;
-					for (int hh2 = 0; hh2 < 32; hh2++)
-					{
-						if (rdPtr->SDL_Data[i].currentheld[hh2] == -1)
-						{
-							rdPtr->SDL_Data[i].currentheld[hh2] = event.jbutton.button;
-							break;
-						}
-					}
-				}
-				break;
-			}
-			break;
-		case SDL_JOYBUTTONUP:
-			for (int i = 0; i < 16; i++)
-			{
-				if (rdPtr->SDL_Data[i].joy_id == which)
-				{
-					rdPtr->SDL_Data[i].lastreleased = event.jbutton.button;
-					for (int hh2 = 0; hh2 < 32; hh2++)
-					{
-						if (rdPtr->SDL_Data[i].currentheld[hh2] == event.jbutton.button)
-						{
-							rdPtr->SDL_Data[i].currentheld[hh2] = -1;
-							break;
-						}
-					}
-				}
-				break;
-			}
-			break;
-		}
 		//Check for device events
 		switch (event.jdevice.type)
 		{
@@ -265,6 +222,37 @@ short WINAPI DLLExport HandleRunObject(LPRDATA rdPtr)
 			{
 				rdPtr->SDL_Data[i].held_buttons_last[b] = rdPtr->SDL_Data[i].held_buttons[b];
 				rdPtr->SDL_Data[i].held_buttons[b] = SDL_JoystickGetButton(rdPtr->SDL_Data[i].joystick, b);
+			}
+			//Buttons released
+			for (int b = 0; b < rdPtr->SDL_Data[i].num_buttons; b++)
+			{
+				if (!rdPtr->SDL_Data[i].held_buttons[b])
+				{
+					for (int hh2 = 0; hh2 < 32; hh2++)
+					{
+						if (rdPtr->SDL_Data[i].currentheld[hh2] == b)
+						{
+							rdPtr->SDL_Data[i].currentheld[hh2] = -1;
+							break;
+						}
+					}
+				}
+			}
+			//Buttons held
+			for (int b = 0; b < rdPtr->SDL_Data[i].num_buttons; b++)
+			{
+				if (rdPtr->SDL_Data[i].held_buttons[b])
+				{
+					for (int hh2 = 0; hh2 < 32; hh2++)
+					{
+						if (rdPtr->SDL_Data[i].currentheld[hh2] == b) break;
+						if (rdPtr->SDL_Data[i].currentheld[hh2] == -1)
+						{
+							rdPtr->SDL_Data[i].currentheld[hh2] = b;
+							break;
+						}
+					}
+				}
 			}
 			//Hats
 			for (int h = 0; h < rdPtr->SDL_Data[i].num_hats; h++)
