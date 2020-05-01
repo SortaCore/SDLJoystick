@@ -37,7 +37,9 @@ short conditionsInfos[]=
 
 // Definitions of parameters for each action
 short actionsInfos[] =
-		{ 0 };
+		{ 
+		IDMN_DLL, M_DLL, ACT_DLL, 0, 1, PARAM_FILENAME2, 0,
+		};
 
 // Definitions of parameters for each expression
 short expressionsInfos[]=
@@ -120,6 +122,36 @@ long WINAPI DLLExport AnyButtonReleased(LPRDATA rdPtr, long param1, long param2)
 // ACTIONS ROUTINES
 // 
 // ============================================================================
+
+short WINAPI DLLExport LoadDLL(LPRDATA rdPtr, long param1, long param2)
+{
+	TCHAR ErrorMsg[400];
+	DWORD dwError = 0;
+	LPSTR path = (LPSTR)param1;
+	if (path != NULL)
+	{
+		//Open SDL library
+		rdPtr->SDL = LoadLibrary(path);
+		dwError = GetLastError();
+		if (rdPtr->SDL == nullptr)
+		{
+			sprintf(ErrorMsg, "Error loading library %s: code %d.", path, dwError);
+			MessageBoxA(nullptr, ErrorMsg,
+				"SDL Load Error", MB_OK | MB_ICONERROR);
+			return 0;
+		}
+		int init;
+		if ((init = SDL_Init(SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC | SDL_INIT_EVENTS)) != 0)
+		{
+			sprintf(ErrorMsg, "Error initializing SDL: code %d.", SDL_GetError());
+			MessageBoxA(nullptr, ErrorMsg,
+				"SDL Init Error", MB_OK | MB_ICONERROR);
+			return 0;
+		}
+		SDL_JoystickEventState(SDL_ENABLE);
+	}
+	return 0;
+}
 
 // ============================================================================
 //
@@ -291,6 +323,7 @@ long (WINAPI * ConditionJumps[])(LPRDATA rdPtr, long param1, long param2) =
 	
 short (WINAPI * ActionJumps[])(LPRDATA rdPtr, long param1, long param2) =
 			{
+			LoadDLL,
 			0
 			};
 

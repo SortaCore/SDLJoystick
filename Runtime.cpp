@@ -28,43 +28,6 @@ ushort WINAPI DLLExport GetRunObjectDataSize(fprh rhPtr, LPEDATA edPtr)
 
 short WINAPI DLLExport CreateRunObject(LPRDATA rdPtr, LPEDATA edPtr, fpcob cobPtr)
 {
-	TCHAR SDLPath[400];
-	TCHAR rootdir[MAX_PATH];
-	TCHAR ErrorMsg[400];
-	DWORD dwError = 0;
-	//Reset joystick IDs and held buttons
-	for (int i = 0; i < 16; i++)
-	{
-		rdPtr->SDL_Data[i].joy_id = -1;
-		rdPtr->SDL_Data[i].lastpressed = -1;
-		rdPtr->SDL_Data[i].lastreleased = -1;
-		for (int h = 0; h < 32; h++)
-		{
-			rdPtr->SDL_Data[i].currentheld[h] = -1;
-		}
-	}
-	//Get path to DLL
-	GetCurrentDirectory(MAX_PATH - 1, rootdir);
-	sprintf(SDLPath, "%s\\%s", rootdir, "SDL2.DLL");
-	//Open SDL library
-	rdPtr->SDL = LoadLibrary(SDLPath);
-	dwError = GetLastError();
-	if (rdPtr->SDL == nullptr)
-	{
-		sprintf(ErrorMsg, "Error loading library %s: code %d.", SDLPath, dwError);
-		MessageBoxA(nullptr, ErrorMsg,
-			"SDL Load Error", MB_OK | MB_ICONERROR);
-		return 0;
-	}
-	int init;
-	if ((init = SDL_Init(SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC | SDL_INIT_EVENTS)) != 0)
-	{
-		sprintf(ErrorMsg, "Error initializing SDL: code %d.", SDL_GetError());
-		MessageBoxA(nullptr, ErrorMsg,
-			"SDL Init Error", MB_OK | MB_ICONERROR);
-		return 0;
-	}
-	SDL_JoystickEventState(SDL_ENABLE);
 	return 0;
 }
 

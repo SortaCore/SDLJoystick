@@ -129,6 +129,21 @@ END
 
 #if defined(APSTUDIO_INVOKED) || defined(EDITOR)
 #if defined(APSTUDIO_INVOKED)
+MN_ACTIONS$(EDITOR) MENU DISCARDABLE
+#else
+MN_ACTIONS MENU DISCARDABLE
+#endif
+BEGIN
+    POPUP ""
+    BEGIN
+        MENUITEM "Load SDL library", IDMN_DLL
+        MENUITEM SEPARATOR
+    END
+END
+#endif
+
+#if defined(APSTUDIO_INVOKED) || defined(EDITOR)
+#if defined(APSTUDIO_INVOKED)
 MN_EXPRESSIONS$(EDITOR) MENU DISCARDABLE 
 #else
 MN_EXPRESSIONS MENU DISCARDABLE 
@@ -238,12 +253,9 @@ BEGIN
     M_ANYBUTTONRELEASED     "11%s: Joystick %s: any button released"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE DISCARDABLE
 BEGIN
-    M_CND_JOY               "Device ID (0 to 15)"
-    M_CND_BUTTON            "Button ID (0 to 31)"
-    M_CND_HAT               "Hat ID (0 to 3)"
-    M_CND_AXIS              "Axis ID (0 to 7)"
+    M_DLL                   "01Load SDL library file: %s"
 END
 
 STRINGTABLE DISCARDABLE 
