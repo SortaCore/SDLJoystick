@@ -17,8 +17,7 @@
 // ---------------------------
 // DEFINITION OF ACTIONS CODES
 // ---------------------------
-#define	ACT_DLL						0
-#define	ACT_LAST					1
+#define	ACT_LAST                    0
 
 // -------------------------------
 // DEFINITION OF EXPRESSIONS CODES

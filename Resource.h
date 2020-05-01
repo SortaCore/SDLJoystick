@@ -91,9 +91,6 @@
 
 #define IDC_STATIC						-1
 
-#define M_DLL							5000
-#define IDMN_DLL						25000
-
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
